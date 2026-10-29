@@ -91,6 +91,6 @@ def game():
         print("What do you want to do?")
         print("1 - Explore")
         print("2 - Go to another location")
-        if player.place == "market":
+        if places[player.place]["isShop"]:
             print("3 - Sell Items")
             print("4 - Buy Items")

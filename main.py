@@ -1,5 +1,6 @@
-import math
-import random
+lazy import math
+lazy import random
+lazy import time
 
 PLAYER_NAME = input("Choose your name: ")
 
@@ -76,7 +77,7 @@ enemies = {
 }
 
 def choose_enemy(place):
-    enemies_list = places[player.place]["enemies"]
+    enemies_list = place[player.place]["enemies"]
     if enemies_list:
         return enemies[random.choice(enemies_list)].items()
     
@@ -84,13 +85,34 @@ def lose():
     print("You lost!")
     quit()
     
+def explore():
+    print(f"{player.name} decided to explore", end="")
+    for _ in range(3):
+        time.sleep(0.67)
+        print(".", end="")
+    print()
+    match random.randint(1, 3):
+        case 1: # Didnt find anything
+            print("You didn't find anything! :(")
+        case 2: # Found enemy
+            pass
+        case 3: # Found item
+            pass
+    
 def game():
     print(f"=== Welcome to the minigame, {player.name}! ===")
     while True:
-        print(f"You're currently in {player.place}, {places[player.place]["description"]}")
+        player_location = places[player.place]
+        print("===============================================================================")
+        print(f"You're currently in {player.place}, {player_location["description"]}")
+        print("===============================================================================")
         print("What do you want to do?")
         print("1 - Explore")
         print("2 - Go to another location")
-        if places[player.place]["isShop"]:
+        if player_location["isShop"]:
             print("3 - Sell Items")
             print("4 - Buy Items")
+        print("===============================================================================")
+        match input("Choose your option: "):
+            case "1":
+                pass

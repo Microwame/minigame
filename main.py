@@ -25,10 +25,11 @@ class Entity:
             lose()
 
 class Hero(Entity):
-    def __init__(self, name: str, hp: int, attack: int, defense: int, wallet: int = 0, starting_place="home"):
+    def __init__(self, name: str, hp: int, attack: int, defense: int, wallet: int = 0, starting_place="home", inventory: dict = {}):
         super().__init__(name, hp, attack, defense)
         self.place = starting_place
         self.wallet = wallet
+        self.inventory = inventory
 
 player = Hero(PLAYER_NAME, 100, 25, 15, wallet=10)
 
@@ -53,6 +54,33 @@ places = {
         "items": [],
         "enemies": ["fire-breathing dragon"],
         "isShop": True,
+    },
+}
+
+products = {
+    "bwoken sword": {
+        "price": None,
+        "sell_price": 10,
+        "description": "A sword that is broken in half, it has no use in combat, but it can be sold for a good price.",
+        "effect": [None, None]
+    },
+    "burger": {
+        "price": 5,
+        "sell_price": 2,
+        "description": "A burger that is half-eaten, but still edible. Restores 20 HP.",
+        "effect": ["hp", 20]
+    },
+    "potion": {
+        "price": 10,
+        "sell_price": 5,
+        "description": "A potion that restores all HP.",
+        "effect": ["hp", 100 - player.hp]
+    },
+    "shield": {
+        "price": 15,
+        "sell_price": 7,
+        "description": "A shield that increases your defense by 5.",
+        "effect": ["defense", 5]
     },
 }
 
@@ -168,9 +196,9 @@ def game():
         print("What do you want to do?")
         print("1 - Explore")
         print("2 - Go to another location")
+        print("3 - Use an item")
         if player_location["isShop"]:
-            print("3 - Sell Items")
-            print("4 - Buy Items")
+            print("4 - Go to the shop")
         print("===============================================================================")
         match input("Choose your option: "):
             case "1":
@@ -184,6 +212,47 @@ def game():
                 if destination in player_location["exits"]:
                     player.place = destination
                     print(f"You went to {destination}.")
+            case "3":
+                if player.inventory:
+                    print("Which item do you want to use?")
+                    for item in player.inventory:
+                        print(f"\t- {item}")
+                    item_to_use = input("Enter the item you want to use: ")
+                    if item_to_use in player.inventory:
+                        # Implement item usage logic here
+                        pass
+                    else:
+                        print("You don't have that item!")
+                else:
+                    print("You don't have any items in your inventory!")
+            case "4":
+                if player_location["isShop"]:
+                    print("Welcome to the shop! What do you want to do?")
+                    print("1 - Sell Items")
+                    print("2 - Buy Items")
+                    match input("Choose your option: "):
+                        case "1":
+                            print("Which item do you want to sell?")
+                            for key, value in products.items():
+                                print(f"\t- {key} (Sell Price: {value['sell_price']})")
+                            item_to_sell = input("Enter the item you want to sell: ")
+                            if item_to_sell in player.inventory:
+                                player.wallet += products[item_to_sell]["sell_price"]
+                                player.inventory.pop(item_to_sell)
+                                print(f"You sold {item_to_sell} for {products[item_to_sell]['sell_price']} coins!")
+                            else:
+                                print("You don't have that item!")
+                        case "2":
+                            print("Which item do you want to buy?")
+                            for key, value in products.items():
+                                print(f"\t- {key} (Price: {value['price']})")
+                            item_to_buy = input("Enter the item you want to buy: ")
+                            if item_to_buy in products and player.wallet >= products[item_to_buy]["price"]:
+                                player.wallet -= products[item_to_buy]["price"]
+                                player.inventory[item_to_buy] = products[item_to_buy]
+                                print(f"You bought {item_to_buy} for {products[item_to_buy]['price']} coins!")
+                            else:
+                                print("You can't afford that item!")
 
 if __name__ == "__main__":
     game()
